@@ -14,7 +14,7 @@ This repository contains a collection of offline games that can be played when y
 ### How To Use
 
 You shouldn't have a problem with USBOFFUN-GAMES unless you are doing one of 2 things.
-1. You dont know how to use Ruffle Flash Player, just download the flash games by clicking on them then in Ruffle just open them!
+1. You dont know how to use Ruffle Flash Player, just download the flash games by clicking on them, then in Ruffle just open them!
 2. In the minecraft file it can be glitchy so if it doesent work just use the 1.8 version!
 
 ### Features
