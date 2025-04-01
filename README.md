@@ -8,7 +8,7 @@ This repository contains a collection of offline games that can be played when y
 1. Click the green 'Code' button, and click 'Download Zip' in the dropdown. Or here: [Download Zip](https://github.com/TealUnblocker/USBOFFUN-GAMES/archive/refs/heads/main.zip)
 2. Download the entire repository as a zip file.
 3. Extract the contents of the zip file.
-5. Open the file named `USBOFFUN-GAMES.html` located in the folder.
+5. Open the file named `index.html` located in the folder.
 6. This will give you access to a wide range of games, including Flash games.
 
 ### How To Use
