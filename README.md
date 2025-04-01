@@ -1,9 +1,5 @@
 ## USBOFFUN-GAMES
-[Online Preview](https://gams-offline.github.io/Gams/Gams.html)
-
-[![GitHub stars](https://img.shields.io/github/stars/Gams-Offline/Gams.svg)](https://github.com/Gams-Offline/Gams/stargazers)
-
-[![GitHub forks](https://img.shields.io/github/forks/Gams-Offline/Gams.svg)](https://github.com/Gams-Offline/Gams/network/members)
+[Online Version](https://tealunblocker.github.io/USBOFFUN-GAMES)
 
 This repository contains a collection of offline games that can be played when you have limited or no internet connection. The games are tested to 100% work with Chromebook and Windows platforms, but it should work on most modern browsers. To get started, follow the instructions below:
 
