@@ -1,5 +1,8 @@
-## USBOFFUN-GAMES(V2)
+## USBOFFUN-GAMES(V2) READ THE FIRST 3 LINES BEFORE PLAYING
 
+A V2 of the classic USBOFFUN GAMES that I got from Gams Offline absolute goat, they made some more games and I added some more and improved others
+
+## Also make sure that you change the basic settings on the front page before you start playing games or it won't let you play the games
 
 
 This repository contains a collection of offline games that can be played when you have limited or no internet connection. The games are tested to 100% work with Chromebook and Windows platforms. To get started, follow the instructions below:
