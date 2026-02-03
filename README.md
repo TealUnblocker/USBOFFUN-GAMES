@@ -1,14 +1,12 @@
-## Gams
+## USBOFFUN-GAMES(V2)
 
-[![GitHub stars](https://img.shields.io/github/stars/Gams-Offline/Gams.svg)](https://github.com/Gams-Offline/Gams/stargazers)
 
-[![GitHub forks](https://img.shields.io/github/forks/Gams-Offline/Gams.svg)](https://github.com/Gams-Offline/Gams/network/members)
 
 This repository contains a collection of offline games that can be played when you have limited or no internet connection. The games are tested to 100% work with Chromebook and Windows platforms. To get started, follow the instructions below:
 
 ### Quick Start
 
-1. Click the green 'Code' button, and click 'Download Zip' in the dropdown. Or here: [Download Zip](https://github.com/Gams-Offline/Gams/archive/refs/heads/main.zip)
+1. Click the green 'Code' button, and click 'Download Zip' in the dropdown. Or here: [Download Zip](https://github.com/TealUnblocker/USBOFFUN-GAMES/archive/refs/heads/main.zip)
 2. Download the entire repository as a zip file.
 3. Extract the contents of the zip file.
 4. Copy all the extracted content and paste it into a new folder.
@@ -49,5 +47,4 @@ By using this technique, the repository includes various games, including those 
 
 I that this approach provides an enjoyable offline gaming experience for coders and gamers alike.
 
-###### Repository created by mountain658 this README, with the assistance of ChatGPT.
-###### Please check out my profile: [mountain658](https://github.com/mountain658) and [Mountain Game Games](https://github.com/mountain658/mountain658.github.io) at https://mountain658.github.io
+###### Huge shoutout to Gams-Offline for the base of the games page and like 90% of the games on here they are the GOAT
