@@ -1,4 +1,4 @@
-## USBOFFUN-GAMES(V2) READ THE FIRST 3 LINES BEFORE PLAYING
+## USBOFFUN-GAMES(V2) READ THE FIRST 3 LINES BEFORE PLAYING Also I am NOT responsible for people getting in trouble in school for using this
 
 A V2 of the classic USBOFFUN GAMES that I got from Gams Offline absolute goat, they made some more games and I added some more and improved others
 
