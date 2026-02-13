@@ -4,7 +4,7 @@ A V2 of the classic USBOFFUN GAMES that I got from Gams Offline absolute goat, t
 
 ## Also make sure that you change the basic settings on the front page before you start playing games or it won't let you play the games, for swf games you must download them before playing them
 
-## Flappy Bird and Helicopter will not work if you don't have an internet connection before hand
+## Flappy Bird and Helicopter will not work if you don't have an internet connection and click them to load them before loosing internet connection
 
 
 This repository contains a collection of offline games that can be played when you have limited or no internet connection. The games are tested to 100% work with Chromebook and Windows platforms. To get started, follow the instructions below:
