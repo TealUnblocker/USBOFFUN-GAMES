@@ -9,6 +9,11 @@ html, body {
 transition: .5s;
 }
 
+/*Override max width of body set in new.css*/
+body {
+ max-width: 1000px;
+}
+
 @font-face {
 font-family: 'facon';
 src: url('assets/facon.ttf') format('truetype');
@@ -201,6 +206,13 @@ transform: translateX(-50%) translateY(-50%);
 </div>
 
 <script>
+try {
+ getStoredJSON("gams", {key: "gamMode"});
+} catch(e) {
+ localStorage.removeItem("gams");
+ storeJSON("gams", {key: "gamMode", value: "gam"})
+}
+
 const BroadcastDisguise = new BroadcastChannel('BroadcastDisguise');
 
 function l(e) {
@@ -577,6 +589,13 @@ section.innerHTML = currentSection;
 tile.appendChild(section);
 }
 
+var modeX = createElement('span', {
+class: "modeX",
+style: "display:none"
+});
+modeX.innerHTML = gamsList[j].type;
+tile.appendChild(modeX);
+
 var aName = (gamsList[j].name).toLowerCase().replace(/\s/g, '');
 var aHref = (gamsList[j].href) || 'g/' + imgName + '.html';
 var a = createElement('a', {
@@ -605,9 +624,12 @@ for (i = 0; i < gams.length; i++){
 gams[i].onclick = function(e){
 var href = (this.getElementsByClassName("href")[0].href);
 var name = (this.getElementsByClassName("name")[0].innerText);
+var modeX = (this.getElementsByClassName("modeX")[0].innerText);
 var pic = (this.getElementsByClassName("img")[0].src);
 
 mode = getStoredJSON('gams', {key: 'gamMode'}) || 'gam';
+
+if (modeX == "raw") {mode = modeX}
 
 if (mode == 'raw') {
 window.open(href);
