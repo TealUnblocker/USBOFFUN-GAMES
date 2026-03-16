@@ -1,1 +1,0 @@
-window.data='data:application/vnd.adobe.flash.movie;base64,'
