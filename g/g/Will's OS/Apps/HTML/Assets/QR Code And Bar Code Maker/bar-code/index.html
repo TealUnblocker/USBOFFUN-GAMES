@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel = "icon" href = "images/icon.png" type = "image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Barcode Generator</title>
+    <!-- Google Fonts-->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Barcode CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js"></script>
+    <!-- Stylesheet -->
+    <style>* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+  }
+  body {
+    background-color: #1b1b1b;
+  }
+  .container {
+    width: min(550px, 90vw);
+    background-color: #ffffff;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    padding: 3rem;
+    border-radius: 0.8em;
+  }
+  h1 {
+    font-size: 2em;
+    margin-bottom: 1em;
+  }
+  input {
+    width: 60%;
+    border: 1px solid #000000;
+    padding: 1em;
+    border-radius: 0.7em;
+  }
+  button {
+    background-color: #1d1d1d;
+    color: #ffffff;
+    border: none;
+    width: 38%;
+    border-radius: 0.7em;
+    padding: 1em;
+    font-size: 0.8em;
+  }
+
+  .footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .icons {
+    display: flex;
+  }
+  
+  .icons .icon {
+    margin: 0 10px;
+    transition: transform 0.3s ease;
+  }
+  
+  .icons .icon:hover {
+    transform: translateY(-5px);
+  }
+
+  .footer p {
+    color: aliceblue;
+    margin-top: 10px;
+  }
+
+  .home {
+    padding: 30px;
+  }
+
+  .home img {
+    height: 60px;
+    transition: box-shadow 0.3s ease;
+    border-radius: 50%;
+  }
+
+  .home img:hover {
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); /* Adjust the values as needed */
+  }
+
+  .icons .icon img{
+    height: 40px;
+    border-radius: 10%;
+  }
+</style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Barcode Generator</h1>
+      <input type="text" id="input" />
+      <button id="btn-barcode-generator">Generate</button>
+      <svg id="barcode"></svg>
+    </div>
+    <div class="home">
+        <a href="../index.html" class="icon"><img src="images/home.png" alt="home"></a>
+    </div>
+   
+    <script>let input = document.getElementById("input");
+let btn = document.getElementById("btn-barcode-generator");
+let barcode = document.getElementById("barcode");
+let container = document.querySelector(".container");
+let initialContainerWidth = container.offsetWidth;
+
+btn.addEventListener("click", () => {
+  let inputValue = input.value.trim();
+
+  if (inputValue === "") {
+    showError("Please enter text to generate a barcode.");
+  } else {
+    generateBarcode(inputValue);
+  }
+});
+
+function generateBarcode(inputValue) {
+  try {
+    JsBarcode("#barcode", inputValue, {
+      format: "code128",
+      displayValue: true,
+      fontSize: 24,
+      lineColor: "#000",
+    });
+
+    // Get the width of the generated barcode
+    let barcodeWidth = barcode.getBBox().width;
+
+    // Adjust container width only if barcode width exceeds initial container width
+    if (barcodeWidth > initialContainerWidth) {
+      container.style.width = `${barcodeWidth}px`;
+    } else {
+      container.style.width = `${initialContainerWidth}px`;
+    }
+  } catch (error) {
+    showError("An error occurred while generating the barcode. Please try again.");
+  }
+}
+
+function showError(message) {
+  let errorMessage = document.createElement("p");
+  errorMessage.classList.add("error-message");
+  errorMessage.textContent = message;
+  barcode.innerHTML = "";
+  barcode.appendChild(errorMessage);
+}
+
+window.onload = (event) => {
+  input.value = "";
+};
+</script>
+  </body>
+</html>

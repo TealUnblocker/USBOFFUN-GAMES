@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel = "icon" href = "images/icon.png" type = "image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QR Code Generator</title>
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins&display=swap"
+      rel="stylesheet"
+    />
+    <!--- QR Code CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- Stylesheet -->
+    <style>* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+body {
+  background-color: #1b1b1b;
+}
+.wrapper {
+  background-color: #ffffff;
+  padding: 5em 4em;
+  position: absolute;
+  width: 31.25em;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+  border-radius: 0.6em;
+  box-shadow: 0 1.5em 3em rgba(212, 212, 212, 0.3);
+}
+#userInput {
+  width: 100%;
+  border: none;
+  border-bottom: 2px solid #000000;
+  padding: 0.5em 1em;
+  font-size: 1em;
+  outline: none;
+}
+.options {
+  margin-top: 1em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+select {
+  appearance: none;
+  width: 8em;
+  padding: 0.45em 0.9em;
+  font-size: 1.25em;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  background-color: #0e0e0e;
+  border: none;
+  color: #ffffff;
+  background-image: url("images/arrow.png");
+  background-repeat: no-repeat;
+  background-size: 1.1em;
+  background-position: 6em;
+  outline: none;
+  border-radius: 0.3em;
+}
+select::-ms-expand {
+  display: none;
+}
+select option {
+  background-color: #ffffff;
+  color: #0e0e0e;
+  letter-spacing: 0.06em;
+  font-weight: 400;
+  font-size: 1.12em;
+}
+.selected {
+  display: none;
+}
+.color-inp {
+  appearance: none;
+  background-color: transparent;
+  width: 3.1em;
+  height: 3.4em;
+  outline: none;
+  border: none;
+}
+.color-inp::-webkit-color-swatch {
+  border-radius: 0.3em;
+  border: 0.18em solid #191f3f;
+}
+.color-inp::-moz-color-swatch {
+  border-radius: 0.3em;
+  border: 0.18em solid #191f3f;
+}
+.box {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+.box button,
+.box a {
+  font-size: 1em;
+  padding: 0.8em 2em;
+  border-radius: 0.5em;
+  margin-top: 2em;
+}
+.box button:disabled {
+  background-color: transparent;
+  color: #a3aab6;
+  border: 0.18em solid #a3aab6;
+}
+.box button {
+  background-color: transparent;
+  color: #0e0e0e;
+  border: 0.18em solid #0e0e0e;
+}
+.box a {
+  background-color: #0e0e0e;
+  color: #ffffff;
+  text-decoration: none;
+  border: 0.18em solid #0e0e0e;
+}
+.container {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.8em;
+}
+.hide {
+  display: none;
+}
+
+.footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.icons {
+  display: flex;
+}
+
+.icons .icon {
+  margin: 0 10px;
+  transition: transform 0.3s ease;
+}
+
+.icons .icon:hover {
+  transform: translateY(-5px);
+}
+
+.footer p {
+  color: aliceblue;
+  margin-top: 10px;
+}
+
+.home {
+  padding: 30px;
+}
+
+.home img {
+  height: 60px;
+  transition: box-shadow 0.3s ease;
+  border-radius: 50%;
+}
+
+.home img:hover {
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); /* Adjust the values as needed */
+}
+
+.icons .icon img{
+  height: 40px;
+  border-radius: 10%;
+}
+</style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <input type="text" id="userInput" placeholder="Enter some text or URL" />
+      <div class="options">
+        <select class="sizeOptions">
+          <option value="100" selected>100 x 100</option>
+          <option value="200">200 x 200</option>
+          <option value="300">300 x 300</option>
+        </select>
+        <input type="color" id="BGColor" class="color-inp" />
+        <input type="color" id="FGColor" class="color-inp" />
+      </div>
+      <div class="box">
+        <button id="submit" disabled>Generate</button>
+        <a href="#" id="download">Download</a>
+      </div>
+      <div class="container"></div>
+    </div>
+    <div class="home">
+      <a href="../index.html" class="icon"><img src="images/home.png" alt="home"></a>
+  </div>
+  
+    <!-- Script -->
+    <script>const container = document.querySelector(".container");
+const userInput = document.getElementById("userInput");
+const submitBtn = document.getElementById("submit");
+const downloadBtn = document.getElementById("download");
+const sizeOptions = document.querySelector(".sizeOptions");
+const BGColor = document.getElementById("BGColor");
+const FGColor = document.getElementById("FGColor");
+let QR_Code;
+let sizeChoice, BGColorChoice, FGColorChoice;
+
+//Set size
+sizeOptions.addEventListener("change", () => {
+  sizeChoice = sizeOptions.value;
+});
+
+//Set background color
+BGColor.addEventListener("input", () => {
+  BGColorChoice = BGColor.value;
+});
+
+//Set foreground color
+FGColor.addEventListener("input", () => {
+  FGColorChoice = FGColor.value;
+});
+
+//Format input
+const inputFormatter = (value) => {
+  value = value.replace(/[^a-z0-9A-Z]+/g, "");
+  return value;
+};
+
+submitBtn.addEventListener("click", async () => {
+  container.innerHTML = "";
+  //QR code genertion
+  QR_Code = await new QRCode(container, {
+    text: userInput.value,
+    width: sizeChoice,
+    height: sizeChoice,
+    colorDark: FGColorChoice,
+    colorLight: BGColorChoice,
+  });
+
+  //Set url for download
+  const src = container.firstChild.toDataURL("image/pmg");
+  downloadBtn.href = src;
+  let userValue = userInput.value;
+  try {
+    userValue = new URL(userValue).hostname;
+  } catch (_) {
+    userValue = inputFormatter(userValue);
+    downloadBtn.download = `${userValue}-qrc`;
+    downloadBtn.classList.remove("hide");
+  }
+});
+
+userInput.addEventListener("input", () => {
+  if (userInput.value.trim().length < 1) {
+    submitBtn.disabled = true;
+    downloadBtn.href = "";
+    downloadBtn.classList.add("hide");
+  } else {
+    submitBtn.disabled = false;
+  }
+});
+
+window.onload = () => {
+  container.innerHTML = "";
+  sizeChoice = 100;
+  sizeOptions.value = 100;
+  userInput.value = "";
+  BGColor.vavlue = BGColorChoice = "#ffffff";
+  FGColor.value = FGColorChoice = "#000000";
+  downloadBtn.classList.add("hide");
+  submitBtn.disabled = true;
+};
+</script>
+  </body>
+</html>

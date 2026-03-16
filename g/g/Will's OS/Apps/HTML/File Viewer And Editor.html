@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>File Viewer And Editor</title>
+    <style>
+        :root { --sidebar-w: 320px; --bg: #1e1e1e; --side-bg: #252526; --accent: #007acc; --text: #ccc; }
+        body, html { height: 100%; margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
+        .app-container { display: flex; height: 100vh; width: 100vw; }
+
+        /* Sidebar */
+        .sidebar { width: var(--sidebar-w); min-width: var(--sidebar-w); border-right: 1px solid #333; background: var(--side-bg); display: flex; flex-direction: column; }
+        .sidebar-header { padding: 12px; border-bottom: 1px solid #333; flex-shrink: 0; display: flex; gap: 5px; }
+        .sidebar-content { flex-grow: 1; overflow-y: auto; overflow-x: hidden; padding: 10px; }
+        
+        .main-btn { flex: 1; padding: 8px; cursor: pointer; background: var(--accent); color: white; border: none; border-radius: 3px; font-weight: bold; font-size: 11px; }
+        .save-config-btn { background: #6a1b9a; }
+        .clear-btn { background: #b71c1c; flex: 0.5; }
+
+        /* Tree UI */
+        ul { list-style: none; padding-left: 15px; margin: 0; border-left: 1px dotted #444; }
+        li { margin: 2px 0; width: 100%; }
+        .item-row { display: flex; align-items: center; cursor: pointer; padding: 3px 0; border-radius: 3px; }
+        .item-row:hover { background: #37373d; }
+        .item-label { flex-grow: 1; font-size: 13px; word-break: break-all; white-space: normal; }
+        .caret { width: 20px; text-align: center; color: #888; font-size: 10px; flex-shrink: 0; }
+        .caret-down { transform: rotate(90deg); display: inline-block; }
+
+        .actions { display: flex; gap: 4px; margin-left: auto; padding-right: 5px; }
+        .icon-btn { background: #333; border: 1px solid #444; color: #aaa; font-size: 11px; cursor: pointer; border-radius: 2px; padding: 2px 5px; }
+        .icon-btn:hover { background: var(--accent); color: #fff; }
+
+        /* Main View */
+        .main-content { flex-grow: 1; display: flex; flex-direction: column; background: #1a1a1a; }
+        .viewport { display: none; width: 100%; height: 100%; flex-direction: column; }
+        .viewport.active { display: flex; }
+
+        .toolbar { background: #333; padding: 8px 15px; display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
+        
+        .editor-layout { display: flex; flex-grow: 1; overflow: hidden; }
+        #editor { flex: 1; background: #1e1e1e; color: #9cdcfe; border: none; padding: 20px; font-family: 'Consolas', monospace; outline: none; resize: none; }
+        #livePreview { flex: 1; background: white; border: none; display: none; }
+
+        iframe, video { width: 100%; height: 100%; border: none; background: white; }
+        .nested { display: none; }
+        .show { display: block; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <button class="main-btn" id="btn-open">📁 Open</button>
+            <button class="main-btn save-config-btn" id="btn-save-config">💾 Save</button>
+            <button class="main-btn clear-btn" id="btn-clear" title="Delete Saved Storage">🗑️</button>
+            <input type="file" id="folderInput" webkitdirectory style="display:none">
+        </div>
+        <div class="sidebar-content" id="treeRoot"></div>
+    </div>
+
+    <div class="main-content">
+        <div id="viewPane" class="viewport active">
+            <div id="mediaBox" style="width:100%; height:100%; display:flex; justify-content:center; align-items:center; text-align:center;">
+                <p>Select a file.<br>Use <b>Save</b> to keep files after refresh.</p>
+            </div>
+        </div>
+
+        <div id="editPane" class="viewport">
+            <div class="toolbar">
+                <span id="fileTitle" style="font-size: 12px; font-family: monospace;">file.html</span>
+                <div style="margin-left:auto; display:flex; gap:10px;">
+                    <button class="icon-btn" id="btn-toggle-preview">👁️ Preview</button>
+                    <button class="icon-btn" style="background:#28a745; color:white;" id="saveDisk">💾 Save to Disk</button>
+                </div>
+            </div>
+            <div class="editor-layout">
+                <textarea id="editor" spellcheck="false"></textarea>
+                <iframe id="livePreview"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const treeRoot = document.getElementById('treeRoot');
+    const mediaBox = document.getElementById('mediaBox');
+    const editor = document.getElementById('editor');
+    const livePreview = document.getElementById('livePreview');
+    const fileTitle = document.getElementById('fileTitle');
+    let currentFile = null;
+    let globalFilesMap = new Map(); // Store files by path
+
+    // --- INDEXEDDB FIX ---
+    const dbName = "IDE_Storage";
+    const storeName = "files";
+
+    function openDB() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(dbName, 2);
+            request.onupgradeneeded = (e) => {
+                const db = e.target.result;
+                if (!db.objectStoreNames.contains(storeName)) {
+                    db.createObjectStore(storeName);
+                }
+            };
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.onerror);
+        });
+    }
+
+    async function saveConfig() {
+        const db = await openDB();
+        const tx = db.transaction(storeName, "readwrite");
+        const store = tx.objectStore(storeName);
+        store.clear();
+
+        for (let [path, file] of globalFilesMap) {
+            store.put(file, path);
+        }
+        tx.oncomplete = () => alert("Configuration Saved to Browser Storage!");
+    }
+
+    async function loadConfig() {
+        const db = await openDB();
+        const tx = db.transaction(storeName, "readonly");
+        const store = tx.objectStore(storeName);
+        const request = store.openCursor();
+        
+        globalFilesMap.clear();
+        request.onsuccess = (e) => {
+            const cursor = e.target.result;
+            if (cursor) {
+                globalFilesMap.set(cursor.key, cursor.value);
+                cursor.continue();
+            } else {
+                if (globalFilesMap.size > 0) renderFromMap();
+            }
+        };
+    }
+
+    document.getElementById('btn-clear').onclick = async () => {
+        const db = await openDB();
+        db.transaction(storeName, "readwrite").objectStore(storeName).clear();
+        location.reload();
+    };
+
+    // --- TREE LOGIC ---
+    document.getElementById('btn-open').onclick = () => document.getElementById('folderInput').click();
+    document.getElementById('folderInput').onchange = (e) => {
+        globalFilesMap.clear();
+        Array.from(e.target.files).forEach(f => globalFilesMap.set(f.webkitRelativePath, f));
+        renderFromMap();
+    };
+
+    function renderFromMap() {
+        treeRoot.innerHTML = "";
+        const root = {};
+        for (let path of globalFilesMap.keys()) {
+            const parts = path.split('/');
+            let curr = root;
+            parts.forEach((part, i) => {
+                if (!curr[part]) curr[part] = (i === parts.length - 1) ? globalFilesMap.get(path) : {};
+                curr = curr[part];
+            });
+        }
+        renderTree(root, treeRoot);
+    }
+
+    function renderTree(obj, container) {
+        const ul = document.createElement('ul');
+        const keys = Object.keys(obj).sort((a,b) => (obj[a] instanceof File) - (obj[b] instanceof File));
+
+        keys.forEach(key => {
+            const li = document.createElement('li');
+            const item = obj[key];
+            const isFile = item instanceof File;
+            const row = document.createElement('div');
+            row.className = "item-row";
+
+            if (!isFile) {
+                const caret = document.createElement('span');
+                caret.className = "caret"; caret.innerHTML = "▶";
+                const label = document.createElement('span');
+                label.className = "item-label"; label.innerHTML = "📁 " + key;
+                const childUl = document.createElement('ul');
+                childUl.className = "nested";
+                row.onclick = () => { caret.classList.toggle('caret-down'); childUl.classList.toggle('show'); };
+                row.appendChild(caret); row.appendChild(label);
+                li.appendChild(row); li.appendChild(childUl);
+                renderTree(item, childUl);
+            } else {
+                row.innerHTML = `<span style="width:20px; flex-shrink:0;"></span>`;
+                const label = document.createElement('span');
+                label.className = "item-label"; label.innerHTML = "📄 " + key;
+                label.onclick = () => openPreview(item);
+                const actions = document.createElement('div');
+                actions.className = "actions";
+                actions.innerHTML = `<button class="icon-btn">🔗</button><button class="icon-btn">📝</button>`;
+                
+                actions.children[0].onclick = (e) => { 
+                    e.stopPropagation(); 
+                    const url = URL.createObjectURL(item);
+                    const win = window.open();
+                    win.document.write(`<iframe src="${url}" style="width:100%; height:100%; border:none; margin:0;"></iframe>`);
+                };
+                actions.children[1].onclick = (e) => { e.stopPropagation(); openEditor(item); };
+                
+                row.appendChild(label); row.appendChild(actions); li.appendChild(row);
+            }
+            ul.appendChild(li);
+        });
+        container.appendChild(ul);
+    }
+
+    // --- PREVIEW/EDITOR ---
+    function openPreview(file) {
+        showPane('viewPane');
+        mediaBox.innerHTML = "";
+        const url = URL.createObjectURL(file);
+        if (file.type.startsWith('video/')) {
+            mediaBox.innerHTML = `<video src="${url}" controls autoplay></video>`;
+        } else {
+            mediaBox.innerHTML = `<iframe src="${url}"></iframe>`;
+        }
+    }
+
+    async function openEditor(file) {
+        showPane('editPane');
+        currentFile = file;
+        fileTitle.textContent = file.name;
+        editor.value = await file.text();
+        updateLivePreview();
+    }
+
+    function updateLivePreview() {
+        const blob = new Blob([editor.value], { type: 'text/html' });
+        livePreview.src = URL.createObjectURL(blob);
+    }
+
+    editor.oninput = updateLivePreview;
+    document.getElementById('btn-toggle-preview').onclick = () => {
+        livePreview.style.display = (livePreview.style.display === "block") ? "none" : "block";
+    };
+
+    function showPane(id) {
+        document.querySelectorAll('.viewport').forEach(p => p.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    document.getElementById('saveDisk').onclick = async () => {
+        const handle = await window.showSaveFilePicker({ suggestedName: currentFile.name });
+        const writable = await handle.createWritable();
+        await writable.write(editor.value);
+        await writable.close();
+    };
+
+    document.getElementById('btn-save-config').onclick = saveConfig;
+    window.onload = loadConfig; // Auto-load on refresh
+</script>
+</body>
+</html>
