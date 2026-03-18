@@ -474,8 +474,8 @@ class EnemyAI {
         
         // Trump出场逻辑
         if (this.currentTrumpConfig && this.trump.aiLevel > 0) {
-            console.log(`Night ${this.game.state.currentNight} - Niall AI Config:`, this.currentTrumpConfig);
-            console.log(`Niall will spawn in ${this.currentTrumpConfig.spawnDelay / 1000} seconds...`);
+            console.log(`Night ${this.game.state.currentNight} - Finn AI Config:`, this.currentTrumpConfig);
+            console.log(`Finn will spawn in ${this.currentTrumpConfig.spawnDelay / 1000} seconds...`);
             
             // 根据配置延迟后Trump出场
             setTimeout(() => {
@@ -553,7 +553,7 @@ class EnemyAI {
             
             console.log(`Custom Night AI Config loaded:`);
             console.log(`- Michael: Level ${this.epstein.aiLevel}`);
-            console.log(`- Niall: Level ${this.trump.aiLevel || 0}`);
+            console.log(`- Finn: Level ${this.trump.aiLevel || 0}`);
             console.log(`- Liam: Level ${customLevels.hawking}`);
             
             return;
@@ -577,9 +577,9 @@ class EnemyAI {
         console.log(`AI Config loaded for Night ${night}`);
         console.log(`- Michael: Level ${this.epstein.aiLevel}, Interval ${this.epstein.movementInterval}ms`);
         if (this.currentTrumpConfig) {
-            console.log(`- Niall: Level ${this.trump.aiLevel}, Interval ${this.trump.movementInterval}ms`);
+            console.log(`- Finn: Level ${this.trump.aiLevel}, Interval ${this.trump.movementInterval}ms`);
         } else {
-            console.log(`- Niall: Not active this night`);
+            console.log(`- Finn: Not active this night`);
         }
     }
     
@@ -615,7 +615,7 @@ class EnemyAI {
         if (this.trump.hasSpawned) return;
         
         this.trump.hasSpawned = true;
-        console.log('Niall has spawned at cam10!');
+        console.log('Finn has spawned at cam10!');
         
         // 立即更新摄像头显示（如果摄像头打开）
         if (this.game.state.cameraOpen) {
@@ -914,14 +914,14 @@ class EnemyAI {
             };
             // 只在第一次触发时显示日志
             if (!this.trump.night5AggressiveMode) {
-                console.log('⚡ Night 5: 4AM reached! Niall is now in aggressive mode (faster + more crawling)');
+                console.log('⚡ Night 5: 4AM reached! Finn is now in aggressive mode (faster + more crawling)');
                 this.trump.night5AggressiveMode = true;
             }
         }
         
         // 如果正在爬行，不能移动
         if (this.trump.isCrawling) {
-            console.log('Niall is crawling, cannot move');
+            console.log('Finn is crawling, cannot move');
             return;
         }
         
@@ -929,7 +929,7 @@ class EnemyAI {
         if (currentLoc === 'cam1') {
             const shouldCrawl = Math.random() < config.ventCrawling.cam1Probability;
             if (shouldCrawl) {
-                console.log(`Niall starting to crawl from ${currentLoc} to office (${config.ventCrawling.cam1Probability * 100}% chance)`);
+                console.log(`Finn starting to crawl from ${currentLoc} to office (${config.ventCrawling.cam1Probability * 100}% chance)`);
                 this.startTrumpCrawling(currentLoc);
                 return;
             }
@@ -939,11 +939,11 @@ class EnemyAI {
         if (currentLoc === 'cam2') {
             const shouldCrawl = Math.random() < config.ventCrawling.cam2Probability;
             if (shouldCrawl) {
-                console.log(`Niall decided to crawl from ${currentLoc} to office (${config.ventCrawling.cam2Probability * 100}% chance)`);
+                console.log(`Finn decided to crawl from ${currentLoc} to office (${config.ventCrawling.cam2Probability * 100}% chance)`);
                 this.startTrumpCrawling(currentLoc);
                 return;
             } else {
-                console.log(`Niall decided to continue moving from ${currentLoc} (${(1 - config.ventCrawling.cam2Probability) * 100}% chance)`);
+                console.log(`Finn decided to continue moving from ${currentLoc} (${(1 - config.ventCrawling.cam2Probability) * 100}% chance)`);
                 // 继续执行正常移动逻辑
             }
         }
@@ -966,7 +966,7 @@ class EnemyAI {
         
         // 如果没有任何可移动位置，不移动
         if (forwardLocations.length === 0 && lateralLocations.length === 0 && backwardLocations.length === 0) {
-            console.log(`Niall has no valid path from ${currentLoc}`);
+            console.log(`Finn has no valid path from ${currentLoc}`);
             return;
         }
         
@@ -976,7 +976,7 @@ class EnemyAI {
         
         // 如果总概率为0，不移动
         if (totalProb === 0) {
-            console.log(`Niall movement probability is 0`);
+            console.log(`Finn movement probability is 0`);
             return;
         }
         
@@ -1013,7 +1013,7 @@ class EnemyAI {
                 selectedLocations = backwardLocations;
                 movementType = 'backward (fallback)';
             } else {
-                console.log(`Niall has no valid path from ${currentLoc}`);
+                console.log(`Finn has no valid path from ${currentLoc}`);
                 return;
             }
         }
@@ -1021,7 +1021,7 @@ class EnemyAI {
         // 从选中的方向中随机选择一个位置
         const nextLocation = selectedLocations[Math.floor(Math.random() * selectedLocations.length)];
         
-        console.log(`Niall moved [${movementType}]: ${currentLoc} (depth ${currentDepth}) -> ${nextLocation} (depth ${this.trumpLocationDepth[nextLocation]})`);
+        console.log(`Finn moved [${movementType}]: ${currentLoc} (depth ${currentDepth}) -> ${nextLocation} (depth ${this.trumpLocationDepth[nextLocation]})`);
         
         this.trump.currentLocation = nextLocation;
         
@@ -1043,7 +1043,7 @@ class EnemyAI {
         
         // 检查通风管是否已经关闭
         if (this.game.state.ventsClosed) {
-            console.log('Niall tried to crawl but vents are already closed! Silent retreat.');
+            console.log('Finn tried to crawl but vents are already closed! Silent retreat.');
             
             // 静默撤退 - 不播放任何音效
             // 找出所有步长为3的位置
@@ -1062,7 +1062,7 @@ class EnemyAI {
                 retreatLocation = epDepth3Locations[Math.floor(Math.random() * epDepth3Locations.length)];
             }
             
-            console.log(`Niall silently retreats to ${retreatLocation} (depth 3)`);
+            console.log(`Finn silently retreats to ${retreatLocation} (depth 3)`);
             
             // 直接移动到撤退位置，不播放音效
             this.trump.currentLocation = retreatLocation;
@@ -1078,7 +1078,7 @@ class EnemyAI {
         this.trump.crawlingFrom = fromLocation; // 记录从哪里开始爬行
         this.trump.currentLocation = 'crawling'; // 标记为爬行状态
         
-        console.log(`Niall is crawling from ${fromLocation}...`);
+        console.log(`Finn is crawling from ${fromLocation}...`);
         console.log(`Crawling config: soundDelay=${config.soundDelay}ms, soundDuration=${config.soundDuration}ms, totalDuration=${config.totalDuration}ms`);
         
         // 更新摄像头显示（Trump消失）
@@ -1103,7 +1103,7 @@ class EnemyAI {
         
         // 根据配置总时长后到达办公室并触发跳杀
         this.trump.crawlingTimer = setTimeout(() => {
-            console.log('Niall reached the office!');
+            console.log('Finn reached the office!');
             this.trump.currentLocation = 'office';
             this.trump.isCrawling = false;
             this.trump.crawlingFrom = null;
@@ -1124,7 +1124,7 @@ class EnemyAI {
         
         const config = this.currentTrumpConfig.ventCrawling;
         
-        console.log('Niall crawling blocked by closed vents!');
+        console.log('Finn crawling blocked by closed vents!');
         
         // 清除爬行计时器
         if (this.trump.crawlingTimer) {
@@ -1156,7 +1156,7 @@ class EnemyAI {
             retreatLocation = epDepth3Locations[Math.floor(Math.random() * epDepth3Locations.length)];
         }
         
-        console.log(`Niall will retreat to ${retreatLocation} (depth 3)`);
+        console.log(`Finn will retreat to ${retreatLocation} (depth 3)`);
         
         // 立即移动到撤退位置
         this.trump.currentLocation = retreatLocation;
@@ -1237,7 +1237,7 @@ class EnemyAI {
             // 吸引成功，Trump移动到sound位置（可以前进或后退）
             const currentDepth = this.trumpLocationDepth[trumpCurrentLoc];
             const soundDepth = this.trumpLocationDepth[soundLocation];
-            console.log(`Niall attracted by sound: ${trumpCurrentLoc} (depth ${currentDepth}) -> ${soundLocation} (depth ${soundDepth})`);
+            console.log(`Finn attracted by sound: ${trumpCurrentLoc} (depth ${currentDepth}) -> ${soundLocation} (depth ${soundDepth})`);
             
             this.trump.currentLocation = soundLocation;
             
@@ -1253,7 +1253,7 @@ class EnemyAI {
             
             trumpAttracted = true;
         } else if (this.trump.hasSpawned && !this.trump.isCrawling) {
-            console.log(`Sound at ${soundLocation} is not adjacent to Niall at ${trumpCurrentLoc}`);
+            console.log(`Sound at ${soundLocation} is not adjacent to Finn at ${trumpCurrentLoc}`);
         }
         
         // 注意：不在这里更新显示，由CameraSystem的动画处理
